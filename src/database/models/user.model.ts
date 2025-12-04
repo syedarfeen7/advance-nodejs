@@ -1,0 +1,50 @@
+import mongoose, { Document, Schema } from "mongoose";
+import bcrypt from "bcrypt";
+
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+
+  comparePassword(password: string): Promise<boolean>;
+}
+
+const userSchema = new Schema<IUser>(
+  {
+    name: {
+      type: String,
+      required: true,
+      minlength: 3,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+      select: false,
+    },
+  },
+  { timestamps: true }
+);
+
+userSchema.pre<IUser>("save", async function () {
+  if (!this.isModified("password")) return;
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (error) {
+    throw error as Error;
+  }
+});
+
+userSchema.methods.comparePassword = async function (password: string) {
+  return bcrypt.compare(password, this.password);
+};
+
+export const User = mongoose.model<IUser>("User", userSchema);
