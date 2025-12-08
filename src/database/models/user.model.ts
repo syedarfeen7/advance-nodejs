@@ -1,10 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import { compareValue } from "../../common/utils/bcrypt";
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  isEmailVerified: boolean;
 
   comparePassword(password: string): Promise<boolean>;
 }
@@ -28,6 +30,10 @@ const userSchema = new Schema<IUser>(
       minlength: 6,
       select: false,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -42,6 +48,9 @@ userSchema.pre<IUser>("save", async function () {
     throw error as Error;
   }
 });
+userSchema.methods.comparePassword = async function (value: string) {
+  return compareValue(value, this.password);
+};
 
 userSchema.methods.comparePassword = async function (password: string) {
   return bcrypt.compare(password, this.password);
