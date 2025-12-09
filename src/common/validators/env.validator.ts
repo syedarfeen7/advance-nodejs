@@ -8,6 +8,7 @@ const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid("development", "production", "test").required(),
   APP_ORIGIN: Joi.string().required(),
   PORT: Joi.number().required(),
+  ACCOUNT_VERIFICATION_EXPIRES_IN_MINUTES: Joi.number().required(),
   BASE_PATH: Joi.string().required(),
   MONGO_URI: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
@@ -15,7 +16,6 @@ const envSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_REFRESH_EXPIRES_IN: Joi.string().required(),
   MAILER_SENDER: Joi.string().required(),
-  RESEND_API_KEY: Joi.string().required(),
 }).unknown(true);
 
 // validate and export

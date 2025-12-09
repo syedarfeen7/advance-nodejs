@@ -21,5 +21,9 @@ export const config = {
     USER: getEnv("SMTP_USER"),
     PASS: getEnv("SMTP_PASS"),
     SENDER: getEnv("MAILER_SENDER"),
+    ACCOUNT_VERIFICATION_EXPIRES_IN_MINUTES: getEnvNumber(
+      "ACCOUNT_VERIFICATION_EXPIRES_IN_MINUTES",
+      60
+    ), // in minutes
   },
 } as const;
