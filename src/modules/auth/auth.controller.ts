@@ -24,4 +24,18 @@ export class AuthController {
 
     return res.status(HTTPStausCodes.CREATED).json({ user });
   });
+
+  public verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+    const { code } = req.query;
+    if (!code || typeof code !== "string") {
+      return res
+        .status(HTTPStausCodes.BAD_REQUEST)
+        .json({ message: "Verification code is required" });
+    }
+
+    await this.authService.verifyEmail(code);
+    return res
+      .status(HTTPStausCodes.OK)
+      .json({ message: "Email verified successfully" });
+  });
 }

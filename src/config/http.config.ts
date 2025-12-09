@@ -21,4 +21,6 @@ export const HTTPStausMessages = {
   NOT_FOUND: "Resource not found",
   INTERNAL_SERVER_ERROR: "Internal server error",
   ALREADY_EXISTS: "Resource already exists",
+  INVALID_OR_EXPIRED_CODE: "Invalid or expired verification code",
+  USER_NOT_FOUND: "User not found",
 } as const;

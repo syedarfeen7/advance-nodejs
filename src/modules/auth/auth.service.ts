@@ -29,7 +29,7 @@ export class AuthService {
       )?.date,
     });
 
-    const verificationLink = `${config.APP_ORIGIN}/verify-email?code=${verificationCode?.code}`;
+    const verificationLink = `${config.APP_ORIGIN}/auth/verify-email?code=${verificationCode?.code}`;
 
     const html = verificationEmailTemplate(name, verificationLink);
 
@@ -40,5 +40,34 @@ export class AuthService {
     });
 
     return user;
+  }
+  async verifyEmail(code: string) {
+    const verificationRecord = await VerificationCodeModel.findOne({
+      code,
+      type: VerificationEnum.EMAIL_VERIFICATION,
+    }).select("+expiresAt +userId");
+    if (!verificationRecord) {
+      throw new Error(HTTPStausMessages.INVALID_OR_EXPIRED_CODE);
+    }
+
+    if (verificationRecord.expiresAt < new Date()) {
+      throw new Error(HTTPStausMessages.INVALID_OR_EXPIRED_CODE);
+    }
+
+    const user = await User.findById(verificationRecord.userId);
+    if (!user) {
+      throw new Error(HTTPStausMessages.USER_NOT_FOUND);
+    }
+
+    if (!user.isEmailVerified) {
+      user.isEmailVerified = true;
+      await user.save();
+      await VerificationCodeModel.deleteMany({
+        userId: user._id,
+        type: VerificationEnum.EMAIL_VERIFICATION,
+      });
+    }
+
+    return;
   }
 }
