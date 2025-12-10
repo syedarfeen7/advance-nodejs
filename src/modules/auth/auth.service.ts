@@ -6,7 +6,7 @@ import { config } from "../../config/env.config";
 import { HTTPStausMessages } from "../../config/http.config";
 import { User } from "../../database";
 import VerificationCodeModel from "../../database/models/verification.model";
-import { SignupDTO } from "./dtos";
+import { LoginDTO, SignupDTO } from "./dtos";
 
 export class AuthService {
   async signup(data: SignupDTO) {
@@ -67,6 +67,24 @@ export class AuthService {
         type: VerificationEnum.EMAIL_VERIFICATION,
       });
     }
+
+    return;
+  }
+
+  async login(data: LoginDTO) {
+    const { email, password } = data;
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      throw new Error(HTTPStausMessages.INVALID_CREDENTIALS);
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      throw new Error(HTTPStausMessages.INVALID_CREDENTIALS);
+    }
+
+    // Further login logic like generating tokens can be added here
 
     return;
   }

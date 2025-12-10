@@ -1,2 +1,3 @@
 import { SignupDTO } from "./signup.dto";
-export { SignupDTO };
+import { LoginDTO } from "./login.dto";
+export { SignupDTO, LoginDTO };

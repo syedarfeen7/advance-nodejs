@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../common/middlewares";
 import { AuthService } from "./auth.service";
-import { signupSchema } from "../../common/validators/user.validator";
+import {
+  loginSchema,
+  signupSchema,
+} from "../../common/validators/user.validator";
 import { HTTPStausCodes } from "../../config/http.config";
 
 export class AuthController {
@@ -37,5 +40,20 @@ export class AuthController {
     return res
       .status(HTTPStausCodes.OK)
       .json({ message: "Email verified successfully" });
+  });
+
+  public login = asyncHandler(async (req: Request, res: Response) => {
+    const data = req.body;
+    const userAgent = req.get("User-Agent") || "unknown";
+    data.userAgent = userAgent;
+    const { error } = loginSchema.validate(data);
+
+    if (error) {
+      return res
+        .status(HTTPStausCodes.BAD_REQUEST)
+        .json({ message: error.message });
+    }
+    await this.authService.login(data);
+    return res.status(HTTPStausCodes.OK).json({ message: "Login successful" });
   });
 }

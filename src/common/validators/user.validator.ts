@@ -7,3 +7,10 @@ export const signupSchema = Joi.object({
 })
   .required()
   .unknown(true);
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+  userAgent: Joi.string().optional(),
+})
+  .required()
+  .unknown(true);
