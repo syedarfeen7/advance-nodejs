@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import { compareValue } from "../../common/utils/bcrypt";
+import { compareValue } from "../../common/utils/bcrypt.util";
 
 export interface IUser extends Document {
   name: string;

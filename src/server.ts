@@ -1,6 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from "express";
-import connectDatabase from "./config/database";
-import { config } from "./config/env";
+import connectDatabase from "./config/database.config";
+import { config } from "./config/env.config";
 import { HTTPStausCodes } from "./config/http.config";
 import { errorHandler } from "./common/middlewares/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";

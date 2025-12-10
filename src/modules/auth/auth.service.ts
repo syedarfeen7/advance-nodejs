@@ -1,8 +1,8 @@
 import { VerificationEnum } from "../../common/enums/verification-code.enum";
 import { verificationEmailTemplate } from "../../common/template/verification-email";
-import { timeFromNowInMinutes } from "../../common/utils/date-time";
-import { sendMail } from "../../common/utils/mailer";
-import { config } from "../../config/env";
+import { timeFromNowInMinutes } from "../../common/utils/date-time.util";
+import { sendMail } from "../../common/utils/mailer.util";
+import { config } from "../../config/env.config";
 import { HTTPStausMessages } from "../../config/http.config";
 import { User } from "../../database";
 import VerificationCodeModel from "../../database/models/verification.model";
