@@ -5,6 +5,7 @@ import { sendMail } from "../../common/utils/mailer.util";
 import { config } from "../../config/env.config";
 import { HTTPStausMessages } from "../../config/http.config";
 import { User } from "../../database";
+import { SessionModel } from "../../database/models/session.model";
 import VerificationCodeModel from "../../database/models/verification.model";
 import { LoginDTO, SignupDTO } from "./dtos";
 
@@ -72,7 +73,7 @@ export class AuthService {
   }
 
   async login(data: LoginDTO) {
-    const { email, password } = data;
+    const { email, password, userAgent } = data;
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
@@ -83,6 +84,11 @@ export class AuthService {
     if (!isMatch) {
       throw new Error(HTTPStausMessages.INVALID_CREDENTIALS);
     }
+
+    const session = await SessionModel.create({
+      userId: user._id,
+      userAgent: userAgent || "unknown",
+    });
 
     // Further login logic like generating tokens can be added here
 
