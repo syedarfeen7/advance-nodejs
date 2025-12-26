@@ -1,6 +1,7 @@
 import { VerificationEnum } from "../../common/enums/verification-code.enum";
 import { verificationEmailTemplate } from "../../common/template/verification-email";
 import { timeFromNowInMinutes } from "../../common/utils/date-time.util";
+import { signAccessToken, signRefreshToken } from "../../common/utils/jwt.util";
 import { sendMail } from "../../common/utils/mailer.util";
 import { config } from "../../config/env.config";
 import { HTTPStausMessages } from "../../config/http.config";
@@ -90,8 +91,19 @@ export class AuthService {
       userAgent: userAgent || "unknown",
     });
 
-    // Further login logic like generating tokens can be added here
+    const accessToken = signAccessToken({
+      userId: user._id,
+      sessionId: session._id,
+    });
 
-    return;
+    const refreshToken = signRefreshToken({
+      sessionId: session._id,
+    });
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
   }
 }

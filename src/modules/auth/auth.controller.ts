@@ -6,6 +6,7 @@ import {
   signupSchema,
 } from "../../common/validators/user.validator";
 import { HTTPStausCodes } from "../../config/http.config";
+import { setRefreshTokenCookie } from "../../common/utils/cookie.util";
 
 export class AuthController {
   private authService: AuthService;
@@ -53,7 +54,15 @@ export class AuthController {
         .status(HTTPStausCodes.BAD_REQUEST)
         .json({ message: error.message });
     }
-    await this.authService.login(data);
-    return res.status(HTTPStausCodes.OK).json({ message: "Login successful" });
+    const { user, accessToken, refreshToken } = await this.authService.login(
+      data
+    );
+
+    setRefreshTokenCookie(res, refreshToken);
+    return res.status(HTTPStausCodes.OK).json({
+      message: "Login successful",
+      user,
+      accessToken,
+    });
   });
 }
