@@ -4,6 +4,7 @@ import { config } from "./config/env.config";
 import { HTTPStausCodes } from "./config/http.config";
 import { errorHandler } from "./common/middlewares/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";
+import activityRoutes from "./modules/activity/activity.routes";
 import cookieParser from "cookie-parser";
 
 const app: Application = express();
@@ -14,6 +15,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/activity`, activityRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(HTTPStausCodes.OK).json({ status: "OK" });
