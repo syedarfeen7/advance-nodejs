@@ -115,7 +115,7 @@ export class AuthService {
       throw new Error(HTTPStausMessages.USER_NOT_FOUND);
     }
 
-    const verificationCode = await VerificationCodeModel.create({
+    const { code } = await VerificationCodeModel.create({
       userId: user?._id,
       type: VerificationEnum.PASSWORD_RESET,
       expiresAt: timeFromNowInMinutes(
@@ -123,7 +123,7 @@ export class AuthService {
       )?.date,
     });
 
-    const resetLink = `${config.APP_ORIGIN}/reset/password?token=${verificationCode}`;
+    const resetLink = `${config.APP_ORIGIN}/reset/password?token=${code}`;
 
     const html = forgotPasswordEmailTemplate(user.name, resetLink);
     await sendMail({
