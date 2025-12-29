@@ -29,7 +29,7 @@ export class AuthController {
         .status(HTTPStausCodes.BAD_REQUEST)
         .json({ message: error.message });
     }
-    const user = await this.authService.signup(data);
+    const user = await this.authService.signup(req as any, data);
 
     return res.status(HTTPStausCodes.CREATED).json({ user });
   });
@@ -60,6 +60,7 @@ export class AuthController {
         .json({ message: error.message });
     }
     const { user, accessToken, refreshToken } = await this.authService.login(
+      req as any,
       data
     );
 
@@ -79,7 +80,7 @@ export class AuthController {
         .json({ message: "Email is required" });
     }
 
-    await this.authService.forgotPassword(email);
+    await this.authService.forgotPassword(req as any, email);
     return res
       .status(HTTPStausCodes.OK)
       .json({ message: "Password reset link sent" });
@@ -102,7 +103,7 @@ export class AuthController {
         .json({ message: error.message });
     }
 
-    await this.authService.resetPassword(token, data);
+    await this.authService.resetPassword(req as any, token, data);
 
     return res.status(HTTPStausCodes.OK).json({
       message: "Password reset successful. Please login again.",
