@@ -9,7 +9,7 @@ router.post("/verify/email", authController.verifyEmail);
 router.post("/login", authController.login);
 router.post(
   "/forgot/password",
-//   forgotPasswordLimiter,
+  forgotPasswordLimiter,
   authController.forgotPassword
 );
 router.post("/reset/password", authController.resetPassword);
