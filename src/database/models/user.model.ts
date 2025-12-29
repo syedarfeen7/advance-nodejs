@@ -1,11 +1,13 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import { compareValue } from "../../common/utils/bcrypt.util";
+import { UserRole } from "../../common/enums/user-role.enum";
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  role: UserRole;
   isEmailVerified: boolean;
 
   comparePassword(password: string): Promise<boolean>;
@@ -29,6 +31,11 @@ const userSchema = new Schema<IUser>(
       required: true,
       minlength: 6,
       select: false,
+    },
+    role: {
+      type: String,
+      enum: Object.values(UserRole),
+      default: UserRole.PATIENT,
     },
     isEmailVerified: {
       type: Boolean,

@@ -16,7 +16,7 @@ import { ResetPasswordDTO } from "./dtos/reset-password.dto";
 
 export class AuthService {
   async signup(req: Request, data: SignupDTO) {
-    const { name, email, password } = data;
+    const { name, email, password, role } = data;
 
     const existing = await User.findOne({ email });
     if (existing) throw new Error(HTTPStausMessages.ALREADY_EXISTS);
@@ -25,6 +25,7 @@ export class AuthService {
       name,
       email,
       password,
+      role,
     });
 
     const verificationCode = await VerificationCodeModel.create({
@@ -104,6 +105,7 @@ export class AuthService {
     const accessToken = signAccessToken({
       userId: user._id,
       sessionId: session._id,
+      role: user.role,
     });
 
     const refreshToken = signRefreshToken({
