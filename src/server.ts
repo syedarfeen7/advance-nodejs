@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
-app.use(`${BASE_PATH}/activity`, activityRoutes);
+app.use(`${BASE_PATH}/activities`, activityRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(HTTPStatusCodes.OK).json({ status: "OK" });

@@ -7,10 +7,16 @@ import { UserRole } from "../../common/enums/user-role.enum";
 const router = Router();
 
 router.get(
-  "/admin/activity",
+  "/",
   authMiddleware,
   roleGuard(UserRole.ADMIN),
-  activityController.getMyActivities
+  activityController.getAllUserActivities
+);
+
+router.get(
+  "/user",
+  authMiddleware,
+  activityController.getUserActivities
 );
 
 export default router;
