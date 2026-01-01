@@ -12,6 +12,8 @@ import {
   setRefreshTokenCookie,
 } from "../../common/utils/cookie.util";
 import { verifyRefreshToken } from "../../common/utils/jwt.util";
+import { logUserActivity } from "../../common/utils/log-activity.util";
+import { UserActionEnum } from "../../common/enums/user-activity.enum";
 
 export class AuthController {
   private authService: AuthService;
@@ -29,7 +31,13 @@ export class AuthController {
         .status(HTTPStatusCodes.BAD_REQUEST)
         .json({ message: error.message });
     }
-    const user = await this.authService.signup(req as any, data);
+    const user = await this.authService.signup(data);
+
+    await logUserActivity({
+      userId: user._id,
+      action: UserActionEnum.REGISTER,
+      req,
+    });
 
     return res.status(HTTPStatusCodes.CREATED).json({ user });
   });
@@ -60,9 +68,13 @@ export class AuthController {
         .json({ message: error.message });
     }
     const { user, accessToken, refreshToken } = await this.authService.login(
-      req as any,
       data
     );
+    await logUserActivity({
+      userId: user._id,
+      action: UserActionEnum.LOGIN,
+      req,
+    });
 
     setRefreshTokenCookie(res, refreshToken);
     return res.status(HTTPStatusCodes.OK).json({
@@ -80,7 +92,15 @@ export class AuthController {
         .json({ message: "Email is required" });
     }
 
-    await this.authService.forgotPassword(req as any, email);
+    await this.authService.forgotPassword(email);
+
+    const user = await this.authService["getUserByEmail"](email);
+
+    await logUserActivity({
+      userId: user._id,
+      action: UserActionEnum.FORGOT_PASSWORD,
+      req,
+    });
     return res
       .status(HTTPStatusCodes.OK)
       .json({ message: "Password reset link sent" });
@@ -103,7 +123,15 @@ export class AuthController {
         .json({ message: error.message });
     }
 
-    await this.authService.resetPassword(req as any, token, data);
+    await this.authService.resetPassword(token, data);
+
+    const user = await this.authService["getUserByEmail"](data?.email);
+
+    await logUserActivity({
+      userId: user._id,
+      action: UserActionEnum.RESET_PASSWORD,
+      req,
+    });
 
     return res.status(HTTPStatusCodes.OK).json({
       message: "Password reset successful. Please login again.",

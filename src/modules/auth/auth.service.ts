@@ -1,4 +1,3 @@
-import { UserActionEnum } from "../../common/enums/user-activity.enum";
 import { UserRole } from "../../common/enums/user-role.enum";
 import { VerificationEnum } from "../../common/enums/verification-code.enum";
 import { forgotPasswordEmailTemplate } from "../../common/template/forgot-password-email";
@@ -9,7 +8,6 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from "../../common/utils/jwt.util";
-import { logUserActivity } from "../../common/utils/log-activity.util";
 import { sendMail } from "../../common/utils/mailer.util";
 import { config } from "../../config/env.config";
 import { HTTPStausMessages } from "../../config/http.config";
@@ -20,7 +18,14 @@ import { LoginDTO, SignupDTO } from "./dtos";
 import { ResetPasswordDTO } from "./dtos/reset-password.dto";
 
 export class AuthService {
-  async signup(req: Request, data: SignupDTO) {
+  async getUserByEmail(email: string) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error(HTTPStausMessages.USER_NOT_FOUND);
+    }
+    return user;
+  }
+  async signup(data: SignupDTO) {
     const { name, email, password, role } = data;
 
     const existing = await User.findOne({ email });
@@ -49,12 +54,6 @@ export class AuthService {
       to: user?.email,
       subject: "Welcome to our platform",
       html,
-    });
-
-    await logUserActivity({
-      userId: user._id,
-      action: UserActionEnum.REGISTER,
-      req,
     });
 
     return user;
@@ -89,7 +88,7 @@ export class AuthService {
     return;
   }
 
-  async login(req: Request, data: LoginDTO) {
+  async login(data: LoginDTO) {
     const { email, password, userAgent } = data;
 
     const user = await User.findOne({ email }).select("+password");
@@ -117,12 +116,6 @@ export class AuthService {
       sessionId: session._id,
     });
 
-    await logUserActivity({
-      userId: user._id,
-      action: UserActionEnum.LOGIN,
-      req,
-    });
-
     return {
       user,
       accessToken,
@@ -130,7 +123,7 @@ export class AuthService {
     };
   }
 
-  public async forgotPassword(req: Request, email: string) {
+  public async forgotPassword(email: string) {
     const user = await User.findOne({ email });
     if (!user) {
       throw new Error(HTTPStausMessages.USER_NOT_FOUND);
@@ -152,18 +145,8 @@ export class AuthService {
       subject: "Password Reset",
       html,
     });
-
-    await logUserActivity({
-      userId: user._id,
-      action: UserActionEnum.FORGOT_PASSWORD,
-      req,
-    });
   }
-  public async resetPassword(
-    req: Request,
-    token: string,
-    data: ResetPasswordDTO
-  ) {
+  public async resetPassword(token: string, data: ResetPasswordDTO) {
     const verification = await VerificationCodeModel.findOne({
       code: token,
       type: VerificationEnum.PASSWORD_RESET,
@@ -192,12 +175,6 @@ export class AuthService {
     });
 
     await SessionModel.deleteMany({ userId: user._id });
-
-    await logUserActivity({
-      userId: user._id,
-      action: UserActionEnum.RESET_PASSWORD,
-      req,
-    });
   }
 
   public async logout(id: string) {
