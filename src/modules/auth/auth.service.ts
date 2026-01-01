@@ -182,11 +182,10 @@ export class AuthService {
   }
 
   public async refreshToken(refreshToken: string) {
-    let payload: { sessionId: string; role: UserRole };
+    let payload: { sessionId: string };
     try {
       payload = verifyRefreshToken(refreshToken) as {
         sessionId: string;
-        role: UserRole;
       };
     } catch {
       throw new Error(HTTPStausMessages.INVALID_TOKEN);
@@ -204,9 +203,12 @@ export class AuthService {
       userAgent: oldSession.userAgent,
     });
 
+    const user = await User.findById(oldSession.userId).select("role");
+    if (!user) throw new Error(HTTPStausMessages.USER_NOT_FOUND);
+
     const accessToken = signAccessToken({
       userId: newSession.userId,
-      role: payload.role,
+      role: user.role,
       sessionId: newSession._id,
     });
 
