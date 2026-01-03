@@ -6,6 +6,7 @@ import { errorHandler } from "./common/middlewares/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";
 import activityRoutes from "./modules/activity/activity.routes";
 import cookieParser from "cookie-parser";
+import userRoutes from "./modules/user/user.routes";
 
 const app: Application = express();
 const BASE_PATH = config.BASE_PATH;
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/activities`, activityRoutes);
+app.use(`${BASE_PATH}/users`, userRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(HTTPStatusCodes.OK).json({ status: "OK" });
