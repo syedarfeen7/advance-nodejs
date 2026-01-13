@@ -1,5 +1,6 @@
 import { HTTPStatusCodes } from "../../config/http.config";
 import { asyncHandler } from "../../shared/middlewares";
+import { parseSpecialties } from "../../shared/utils/doctor/specialty.util";
 import { doctorProfileSchema } from "../../shared/validators/doctor.validator";
 import { DoctorService } from "./doctor.service";
 import { Request, Response } from "express";
@@ -13,7 +14,7 @@ export class DoctorController {
 
   completeProfile = asyncHandler(async (req: Request, res: Response) => {
     const { error } = doctorProfileSchema.validate(
-      { ...req.body, specialties: JSON.parse(req.body.specialties) },
+      { ...req.body, specialties: parseSpecialties(req.body.specialties) },
       {
         abortEarly: false,
         stripUnknown: true,
@@ -29,7 +30,7 @@ export class DoctorController {
 
     const body = {
       ...req.body,
-      specialties: JSON.parse(req.body.specialties),
+      specialties: parseSpecialties(req.body.specialties),
       profilePicture: req.file ? `/uploads/${req.file.filename}` : undefined,
     };
     const profile = await this.doctorService.createOrUpdateProfile(

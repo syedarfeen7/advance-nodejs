@@ -12,6 +12,7 @@ export class DoctorService {
       {
         new: true,
         upsert: true,
+        runValidators: true,
       }
     );
 
