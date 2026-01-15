@@ -43,4 +43,18 @@ export class DoctorController {
       profile,
     });
   });
+
+  getMyProfile = asyncHandler(async (req: Request, res: Response) => {
+    const profile = await this.doctorService.getMyProfile(req.user!.userId);
+
+    if (!profile) {
+      return res.status(HTTPStatusCodes.NOT_FOUND).json({
+        message: "Profile not found",
+      });
+    }
+    res.status(200).json({
+      message: "Profile fetched successfully",
+      profile,
+    });
+  });
 }

@@ -14,4 +14,11 @@ router.post(
   uploadImage.single("profilePicture"),
   doctorController.completeProfile
 );
+
+router.get(
+  "/me",
+  authMiddleware,
+  roleGuard(UserRole.DOCTOR),
+  doctorController.getMyProfile
+);
 export default router;

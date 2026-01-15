@@ -1,3 +1,4 @@
+import { User } from "../../database";
 import { DoctorProfile } from "../../database/models/doctor.model";
 import { DoctorProfileDTO } from "./dtos/doctor-profile.dto";
 
@@ -20,6 +21,17 @@ export class DoctorService {
   }
 
   async getMyProfile(userId: string) {
-    return DoctorProfile.findOne({ userId });
+    const user = await User.findById(userId).select(
+      "name email phoneNumber role"
+    );
+
+    if (!user) return null;
+
+    const profile = await DoctorProfile.findOne({ userId });
+
+    return {
+      user,
+      profile,
+    };
   }
 }
